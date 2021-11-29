@@ -16,6 +16,8 @@ public class User implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
+
+    @Column(unique = true)//propriedade n via se repitir no banco
     private String email;
     private String password;
 
@@ -35,6 +37,7 @@ public class User implements Serializable {
     public User(Long id, String name, String email, String password) {
         this.id = id;
         this.name = name;
+
         this.email = email;
         this.password = password;
     }
