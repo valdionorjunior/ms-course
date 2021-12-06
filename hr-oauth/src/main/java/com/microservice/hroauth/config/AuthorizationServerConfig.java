@@ -1,6 +1,8 @@
 package com.microservice.hroauth.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -12,9 +14,15 @@ import org.springframework.security.oauth2.config.annotation.web.configurers.Aut
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
 import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
 
+@RefreshScope //atualiza os valores das variavei em tempo de execucao com a dependencia actuator
 @EnableAuthorizationServer
 @Configuration
 public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdapter { //classse reponsavel por transformar o ms em um servidor de autorizacao
+
+    @Value("${oauth.client.name}")
+    private String clientName;//usuario de aplicação
+    @Value("${oauth.client.secret}")
+    private String clientSecret;//senha de aplicação
 
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
@@ -37,8 +45,8 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
 
         clients.inMemory()
-                .withClient("myappname123")
-                .secret(passwordEncoder.encode("myappsecret123"))
+                .withClient(clientName)
+                .secret(passwordEncoder.encode(clientSecret))
                 .scopes("read", "write")
                 .authorizedGrantTypes("password")
                 .accessTokenValiditySeconds(86400);//24h
